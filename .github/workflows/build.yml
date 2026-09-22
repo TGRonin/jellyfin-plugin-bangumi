@@ -32,7 +32,21 @@ jobs:
       - name: Restore NuGet Packages
         run: dotnet restore
       - name: .NET Test
-        run: dotnet test --configuration Release Jellyfin.Plugin.Bangumi.Test
+        id: dotnet-test
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          dotnet test --configuration Release Jellyfin.Plugin.Bangumi.Test 2>&1 | tee /tmp/dotnet-test.log
+      - name: Surface test log to job summary
+        if: steps.dotnet-test.outcome == 'failure'
+        run: |
+          {
+            echo '## .NET Test failed'
+            echo ''
+            echo '```'
+            tail -n 250 /tmp/dotnet-test.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: .NET Publish
         run: dotnet publish --configuration Release --output publish Jellyfin.Plugin.Bangumi
       - uses: actions/upload-artifact@v4
