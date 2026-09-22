@@ -30,7 +30,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - name: Patch version
-        run: sed -i "/Version/s/>.*</>${{ github.ref_name }}.0</" Directory.Build.props
+        env:
+          TAG: ${{ github.ref_name }}
+        run: sed -i "/Version/s/>.*</>${TAG#v}.0</" Directory.Build.props
       - name: Setup .NET 8.x
         uses: actions/setup-dotnet@v4
         with:
@@ -43,8 +45,9 @@ jobs:
         shell: pwsh
         env:
           CHANGELOG: ${{ github.event.release.body }}
-          VERSION: ${{ github.ref_name }}.0
+          TAG: ${{ github.ref_name }}
         run: |
+          $version = ($env:TAG -replace '^v', '') + '.0'
           @{
               category = "Metadata"
               changelog = $env:CHANGELOG
@@ -55,7 +58,7 @@ jobs:
               owner = $env:PLUGIN_OWNER
               targetAbi = $env:TARGET_ABI
               timestamp = Get-Date -AsUTC -Format s
-              version = $env:VERSION
+              version = $version
           } | ConvertTo-Json -Compress | Out-File "publish/meta.json" -Encoding utf8NoBOM -NoNewline
       - name: Create Release Artifact
         run: zip -9j Jellyfin.Plugin.Bangumi.zip publish/*.dll publish/meta.json
@@ -102,9 +105,10 @@ jobs:
         shell: pwsh
         env:
           CHANGELOG: ${{ github.event.release.body }}
-          VERSION: ${{ github.ref_name }}.0
+          TAG: ${{ github.ref_name }}
         run: |
           $ErrorActionPreference = 'Stop'
+          $Version = ($env:TAG -replace '^v', '') + '.0'
           New-Item -ItemType Directory -Force -Path Release | Out-Null
 
           $existing = $null
@@ -117,10 +121,10 @@ jobs:
 
           $versions = @()
           if ($existing) {
-            $versions = @($existing[0].versions | Where-Object { $_.version -ne $env:VERSION })
+            $versions = @($existing[0].versions | Where-Object { $_.version -ne $Version })
           }
 
-          Copy-Item 'Jellyfin.Plugin.Bangumi.zip' "Release/$env:VERSION.zip" -Force
+          Copy-Item 'Jellyfin.Plugin.Bangumi.zip' "Release/$Version.zip" -Force
 
           $imageUrl = $null
           if (Test-Path 'poster.png') {
@@ -129,8 +133,8 @@ jobs:
           }
 
           $entry = [ordered]@{
-            version = $env:VERSION
-            sourceUrl = "$env:BASE_URL/$env:VERSION.zip"
+            version = $Version
+            sourceUrl = "$env:BASE_URL/$Version.zip"
             changelog = $env:CHANGELOG
             targetAbi = $env:TARGET_ABI
             checksum = (Get-FileHash -Algorithm MD5 'Jellyfin.Plugin.Bangumi.zip').Hash.ToLower()
@@ -141,7 +145,7 @@ jobs:
           $versions = @($entry) + $versions
 
           foreach ($v in $versions) {
-            if ($v.version -eq $env:VERSION) { continue }
+            if ($v.version -eq $Version) { continue }
             $dest = "Release/$($v.version).zip"
             if (Test-Path $dest) { continue }
             try {

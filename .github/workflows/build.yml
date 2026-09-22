@@ -23,14 +23,14 @@ jobs:
       - name: Resolve MetaData
         id: meta
         env:
-          BASE_TAG: '1.1.0'
+          BASE_TAG: 'v1.1.0'
         run: |
           if git rev-parse -q --verify "refs/tags/$BASE_TAG" >/dev/null; then
             DISTANCE=$(git rev-list --count "$BASE_TAG"..HEAD)
           else
             DISTANCE=0
           fi
-          echo "version=$BASE_TAG.$DISTANCE" >> "$GITHUB_OUTPUT"
+          echo "version=${BASE_TAG#v}.$DISTANCE" >> "$GITHUB_OUTPUT"
       - name: Patch version
         run: sed -i "/Version/s/>.*</>${{ steps.meta.outputs.version }}</" Directory.Build.props
       - name: Setup .NET 8.x
