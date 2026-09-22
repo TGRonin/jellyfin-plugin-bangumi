@@ -114,6 +114,7 @@ UpgradeLog*.XML
 # MonoDevelop metafiles
 MediaBrowser.Plugins.Anime.userprefs
 
-# 本地维护手册，不入库
+# 本地维护手册与移植清单，不入库
 MAINTENANCE.md
+PORTING.md
 
