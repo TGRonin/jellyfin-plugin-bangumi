@@ -1,5 +1,9 @@
 * text eol=lf
 
+# The global text rule above would run CRLF normalization over binary assets and
+# silently corrupt them on `git add`; poster.png hashes differently with/without it.
+*.png  binary
+
 # Custom for Visual Studio
 *.cs     diff=csharp
 

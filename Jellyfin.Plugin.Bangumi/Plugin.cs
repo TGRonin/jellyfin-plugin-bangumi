@@ -30,20 +30,20 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         [
             new PluginPageInfo
             {
-                Name = "Plugin.Bangumi.Configuration",
-                DisplayName = "Bangumi 设置",
+                Name = "Plugin.Bangumi1010.Configuration",
+                DisplayName = "Bangumi for 10.10 设置",
                 MenuIcon = "app_registration",
                 EnableInMainMenu = true,
                 EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.Main.html"
             },
             new PluginPageInfo
             {
-                Name = "Plugin.Bangumi.Configuration.Script",
+                Name = "Plugin.Bangumi1010.Configuration.Script",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.Main.js"
             },
             new PluginPageInfo
             {
-                Name = "Plugin.Bangumi.Configuration.Style",
+                Name = "Plugin.Bangumi1010.Configuration.Style",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.Style.css"
             }
         ];

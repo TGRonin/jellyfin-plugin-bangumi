@@ -6,9 +6,9 @@ public static class Constants
 {
     public const string ProviderName = "Bangumi";
 
-    public const string PluginName = "Bangumi Lite";
+    public const string PluginName = "Bangumi Lite for 10.10";
 
-    public const string PluginGuid = "41b59f1b-a6cf-474a-b416-785379cbd856";
+    public const string PluginGuid = "7e0e9030-598d-4709-814e-6a91dfed26f0";
 
     public const string Language = "zh";
 

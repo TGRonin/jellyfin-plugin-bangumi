@@ -14,17 +14,25 @@ jobs:
     name: Build and Test Plugin
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.meta.outputs.tag }}.${{ steps.meta.outputs.distance }}
+      version: ${{ steps.meta.outputs.version }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Resolve MetaData
         id: meta
-        uses: proudust/gh-describe@v2
-        with:
-          exclude: ci
+        env:
+          BASE_TAG: '1.1.0'
+        run: |
+          if git rev-parse -q --verify "refs/tags/$BASE_TAG" >/dev/null; then
+            DISTANCE=$(git rev-list --count "$BASE_TAG"..HEAD)
+          else
+            DISTANCE=0
+          fi
+          echo "version=$BASE_TAG.$DISTANCE" >> "$GITHUB_OUTPUT"
       - name: Patch version
-        run: sed -i "/Version/s/>.*</>${{ steps.meta.outputs.tag }}.${{ steps.meta.outputs.distance }}</" Directory.Build.props
+        run: sed -i "/Version/s/>.*</>${{ steps.meta.outputs.version }}</" Directory.Build.props
       - name: Setup .NET 8.x
         uses: actions/setup-dotnet@v4
         with:
@@ -82,8 +90,8 @@ jobs:
               category = "Metadata"
               changelog = ""
               description = "Jellyfin bgm.tv 数据源插件，用于拉取中文番剧信息及图片。"
-              guid = "41b59f1b-a6cf-474a-b416-785379cbd856"
-              name = "Bangumi"
+              guid = "7e0e9030-598d-4709-814e-6a91dfed26f0"
+              name = "Bangumi for 10.10"
               overview = "bgm.tv metadata provider for Jellyfin"
               owner = "TGRonin"
               targetAbi = "10.9.0.0"
