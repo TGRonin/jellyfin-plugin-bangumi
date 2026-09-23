@@ -33,5 +33,7 @@ public class FakePath
     {
         if (Directory.Exists(BasePath))
             Directory.Delete(BasePath, true);
+        Assert.IsTrue(Mock.MockedBangumiApi.UnmatchedRequests.IsEmpty,
+            string.Join("\n", Mock.MockedBangumiApi.UnmatchedRequests));
     }
 }

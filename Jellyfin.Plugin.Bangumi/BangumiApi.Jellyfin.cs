@@ -93,7 +93,7 @@ public partial class BangumiApi(IHttpClientFactory httpClientFactory, ArchiveDat
         return await Send(request, store.GetAvailable()?.AccessToken, token);
     }
 
-    public HttpClient GetHttpClient()
+    public virtual HttpClient GetHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient(NamedClient.Default);
         httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Jellyfin.Plugin.Bangumi", _plugin.Version.ToString()));
@@ -103,7 +103,7 @@ public partial class BangumiApi(IHttpClientFactory httpClientFactory, ArchiveDat
         return httpClient;
     }
 
-    public HttpClient GetHttpClient(HttpClientHandler handler)
+    public virtual HttpClient GetHttpClient(HttpClientHandler handler)
     {
         var httpClient = new HttpClient(handler);
         httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Jellyfin.Plugin.Bangumi", _plugin.Version.ToString()));

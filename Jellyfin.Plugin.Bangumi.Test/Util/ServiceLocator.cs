@@ -35,6 +35,7 @@ public class ServiceLocator
         serviceCollection.AddScoped<SeriesProvider>();
         serviceCollection.AddScoped<SubjectImageProvider>();
         new PluginServiceRegistrator().RegisterServices(serviceCollection, null!);
+        serviceCollection.AddSingleton<BangumiApi, MockedBangumiApi>();
         _provider = serviceCollection.BuildServiceProvider();
 
         var plugin = GetService<Bangumi.Plugin>();
