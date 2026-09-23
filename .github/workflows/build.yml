@@ -53,11 +53,15 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           # Raw logs and the job summary both require sign-in; check-run
           # annotations are the only failure detail readable anonymously.
-          grep -E "error CS|Missing Bangumi API fixture|Assert\.|Error Message|Failed!|Passed!|Skipped " /tmp/dotnet-test.log \
-            | head -n 80 \
-            | while IFS= read -r line; do
-                printf '::error::%s\n' "${line//'%'/'%25'}"
+          # Keep the volume low: GitHub caps how many annotations it stores.
+          {
+            grep -E "error CS|Missing Bangumi API fixture" /tmp/dotnet-test.log | head -n 20
+            grep -A4 -E "^  Failed " /tmp/dotnet-test.log | head -n 40
+            grep -E "^(Failed|Passed)!" /tmp/dotnet-test.log | head -n 2
+          } | while IFS= read -r line; do
+                [ -n "$line" ] && [ "$line" != "--" ] && printf '::error::%s\n' "${line//'%'/'%25'}"
               done
+          exit 0
       - name: .NET Publish
         run: dotnet publish --configuration Release --output publish Jellyfin.Plugin.Bangumi
       - uses: actions/upload-artifact@v4
