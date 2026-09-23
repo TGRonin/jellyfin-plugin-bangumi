@@ -20,7 +20,6 @@ namespace Jellyfin.Plugin.Bangumi.Providers;
 public class EpisodeProvider(BangumiApi api, Logger<EpisodeProvider> log, ILibraryManager libraryManager, IMediaSourceManager mediaSourceManager, Logger<AnitomyEpisodeParser> anitomyLogger, Logger<BasicEpisodeParser> basicLogger)
     : IRemoteMetadataProvider<Episode, EpisodeInfo>, IHasOrder
 {
-
     private static PluginConfiguration Configuration => Plugin.Instance!.Configuration;
 
     public int Order => -5;
@@ -56,10 +55,7 @@ public class EpisodeProvider(BangumiApi api, Logger<EpisodeProvider> log, ILibra
             if (BasicEpisodeParser.IsSpecial(info.Path, context.LibraryManager, true))
             {
                 result.HasMetadata = true;
-                result.Item = new Episode
-                {
-                    ParentIndexNumber = 0
-                };
+                result.Item = new Episode { ParentIndexNumber = 0 };
             }
 
             return result;
@@ -74,14 +70,15 @@ public class EpisodeProvider(BangumiApi api, Logger<EpisodeProvider> log, ILibra
         if (episode.AirDate.Length == 4)
             result.Item.ProductionYear = int.Parse(episode.AirDate);
 
+        var parent = libraryManager.FindByPath(Path.GetDirectoryName(info.Path)!, true);
+
         result.Item.Name = episode.Name;
         result.Item.OriginalTitle = episode.OriginalName;
         result.Item.IndexNumber = (int)episode.Order + localConfiguration.Offset;
         result.Item.Overview = string.IsNullOrEmpty(episode.Description) ? null : episode.Description;
-        result.Item.ParentIndexNumber = info.ParentIndexNumber ?? 1;
+        result.Item.ParentIndexNumber = parent is Series ? 1 : info.ParentIndexNumber ?? 1;
 
-        var parent = libraryManager.FindByPath(Path.GetDirectoryName(info.Path)!, true);
-        if (BasicEpisodeParser.IsSpecial(info.Path, context.LibraryManager, true) || episode.Type == EpisodeType.Special || info.ParentIndexNumber == 0)
+        if (BasicEpisodeParser.IsSpecial(info.Path, context.LibraryManager, true) || episode.Type == EpisodeType.Special || (parent is not Series && info.ParentIndexNumber == 0))
         {
             result.Item.ParentIndexNumber = 0;
         }
@@ -127,5 +124,4 @@ public class EpisodeProvider(BangumiApi api, Logger<EpisodeProvider> log, ILibra
     {
         return api.GetHttpClient().GetAsync(url, cancellationToken);
     }
-
 }
