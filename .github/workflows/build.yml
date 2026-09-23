@@ -22,14 +22,10 @@ jobs:
           fetch-depth: 0
       - name: Resolve MetaData
         id: meta
-        env:
-          BASE_TAG: 'v1.1.0'
         run: |
-          if git rev-parse -q --verify "refs/tags/$BASE_TAG" >/dev/null; then
-            DISTANCE=$(git rev-list --count "$BASE_TAG"..HEAD)
-          else
-            DISTANCE=0
-          fi
+          BASE_TAG=$(git describe --tags --match 'v*' --abbrev=0 2>/dev/null || echo v1.1.0)
+          DISTANCE=$(git rev-list --count "$BASE_TAG"..HEAD)
+          echo "Resolved base tag $BASE_TAG, distance $DISTANCE"
           echo "version=${BASE_TAG#v}.$DISTANCE" >> "$GITHUB_OUTPUT"
       - name: Patch version
         run: sed -i "/Version/s/>.*</>${{ steps.meta.outputs.version }}</" Directory.Build.props
