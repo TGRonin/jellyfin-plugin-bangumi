@@ -1,0 +1,6 @@
+{
+  "Request": "GET /v0/subjects/69496/image?type=large\n",
+  "Status": 302,
+  "Body": "",
+  "Location": "https://lain.bgm.tv/pic/cover/l/01/35/69496_xMBm7.jpg"
+}

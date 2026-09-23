@@ -62,7 +62,7 @@ public class Season
     {
         var season = new MediaBrowser.Controller.Entities.TV.Season();
         Assert.AreEqual(-5, _imageProvider.Order, "should have provider order: -5");
-        Assert.AreEqual(Constants.PluginName, _imageProvider.Name, "should have provider name");
+        Assert.AreEqual(Constants.ProviderName, _imageProvider.Name, "should have provider name");
         Assert.IsTrue(_imageProvider.Supports(season), "should support series image");
         Assert.AreEqual(ImageType.Primary, _imageProvider.GetSupportedImages(season).First(), "should support primary image");
         var imgList = await _imageProvider.GetImages(new MediaBrowser.Controller.Entities.TV.Season { ProviderIds = new Dictionary<string, string> { { Constants.ProviderName, "69496" } } }, _token);

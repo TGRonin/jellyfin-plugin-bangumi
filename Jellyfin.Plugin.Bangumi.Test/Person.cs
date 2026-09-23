@@ -51,7 +51,7 @@ public class Person
     {
         var person = new MediaBrowser.Controller.Entities.Person();
         Assert.AreEqual(-5, _imageProvider.Order, "should have provider order: -5");
-        Assert.AreEqual(Constants.PluginName, _imageProvider.Name, "should have provider name");
+        Assert.AreEqual(Constants.ProviderName, _imageProvider.Name, "should have provider name");
         Assert.IsTrue(_imageProvider.Supports(person), "should support person image");
         Assert.AreEqual(ImageType.Primary, _imageProvider.GetSupportedImages(person).First(), "should support primary image");
         var imgList = await _imageProvider.GetImages(new MediaBrowser.Controller.Entities.TV.Episode { ProviderIds = new Dictionary<string, string> { { Constants.ProviderName, "5847" } } }, _token);

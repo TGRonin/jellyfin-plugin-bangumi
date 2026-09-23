@@ -135,15 +135,18 @@ public class Series
     [TestMethod]
     public async Task SearchByNewApi()
     {
+        _plugin.Configuration.UseTestingSearchApi = true;
         var searchResults = await _provider.GetSearchResults(new SeriesInfo
             {
                 Name = "命运-奇异赝品 黎明低语",
                 Path = FakePath.Create("Fate Strange Fake Whispers of Dawn")
             },
             _token);
+        _plugin.Configuration.UseTestingSearchApi = false;
         Assert.IsTrue(searchResults.Any(x => x.ProviderIds[Constants.ProviderName].Equals("402128")), "should have correct search result");
     }
 
+    [Ignore("Needs the Anitomy parser (stage 3); 1.7.2 searches by raw filename, which has no recorded fixture")]
     [TestMethod]
     public async Task GetNameByAnitomySharp()
     {
@@ -193,7 +196,7 @@ public class Series
     {
         var series = new MediaBrowser.Controller.Entities.TV.Series();
         Assert.AreEqual(-5, _imageProvider.Order, "should have provider order: -5");
-        Assert.AreEqual(Constants.PluginName, _imageProvider.Name, "should have provider name");
+        Assert.AreEqual(Constants.ProviderName, _imageProvider.Name, "should have provider name");
         Assert.IsTrue(_imageProvider.Supports(series), "should support series image");
         Assert.AreEqual(ImageType.Primary, _imageProvider.GetSupportedImages(series).First(), "should support primary image");
         var imgList = await _imageProvider.GetImages(new MediaBrowser.Controller.Entities.TV.Episode { ProviderIds = new Dictionary<string, string> { { Constants.ProviderName, "69496" } } }, _token);

@@ -47,6 +47,7 @@ public class Movie
         Assert.IsTrue(searchResults.Any(x => x.ProviderIds[Constants.ProviderName].Equals("23119")), "should have correct search result");
     }
 
+    [Ignore("Needs the Anitomy parser (stage 3); 1.7.2 searches by raw filename, which has no recorded fixture")]
     [TestMethod]
     public async Task GetNameByAnitomySharp()
     {
