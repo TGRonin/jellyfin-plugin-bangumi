@@ -51,6 +51,13 @@ jobs:
             tail -n 250 /tmp/dotnet-test.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          # Raw logs and the job summary both require sign-in; check-run
+          # annotations are the only failure detail readable anonymously.
+          grep -E "error CS|Missing Bangumi API fixture|Assert\.|Error Message|Failed!|Passed!|Skipped " /tmp/dotnet-test.log \
+            | head -n 80 \
+            | while IFS= read -r line; do
+                printf '::error::%s\n' "${line//'%'/'%25'}"
+              done
       - name: .NET Publish
         run: dotnet publish --configuration Release --output publish Jellyfin.Plugin.Bangumi
       - uses: actions/upload-artifact@v4
