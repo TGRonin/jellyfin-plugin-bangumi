@@ -1,45 +1,78 @@
-# [bgm.tv](https://bgm.tv) metadata provider for Jellyfin
+# Bangumi for 10.10
 
-[![Jellyfin Plugin](https://github.com/kookxiang/jellyfin-plugin-bangumi/actions/workflows/build.yml/badge.svg)](https://github.com/kookxiang/jellyfin-plugin-bangumi/actions/workflows/build.yml)
+![Bangumi for 10.10](poster.png)
 
-Jellyfin bgm.tv 数据源插件，用于拉取中文番剧信息及图片。
+[![Build](https://github.com/TGRonin/jellyfin-plugin-bangumi/actions/workflows/build.yml/badge.svg)](https://github.com/TGRonin/jellyfin-plugin-bangumi/actions/workflows/build.yml)
 
-支持将播放进度同步至 bgm.tv
+[bgm.tv](https://bgm.tv) 元数据源插件的 **Jellyfin 10.10 专用**维护分支。
+在保持 .NET 8 / Jellyfin 10.10 兼容的前提下，持续把上游新版本的功能与问题修复同步复现到本分支。
 
-![后台配置](https://user-images.githubusercontent.com/2725379/158064318-98a82a79-a783-4552-abaa-af18724ad9bf.png)
+> 本项目是 [kookxiang/jellyfin-plugin-bangumi](https://github.com/kookxiang/jellyfin-plugin-bangumi) 的独立 fork，基线为上游 tag `1.7.2`。
+> 上游自 `1.7.3` 起转向 Jellyfin 10.11（.NET 9），master 已支持 Jellyfin 12。
+> **如果你在使用 Jellyfin 10.11 或更新版本，请直接使用上游插件**，本分支只服务 10.10.x。
 
-# 下载
+## 与官方版的区别
 
- - [CI 最新版](https://github.com/kookxiang/jellyfin-plugin-bangumi/releases/tag/ci)
- - [GitHub 稳定版](https://github.com/kookxiang/jellyfin-plugin-bangumi/releases/latest)
+| | 官方版 | 本分支 |
+|---|---|---|
+| 支持 Jellyfin | 10.11 / 10.12 | **10.10.x**（.NET 8） |
+| 插件 GUID | `41b59f1b-…` | `7e0e9030-598d-4709-814e-6a91dfed26f0` |
+| 显示名称 | Bangumi | Bangumi for 10.10 |
+| 代码基线 | 上游持续更新 | 上游 `1.7.2` + 逐步同步的功能 |
+| 与官方版关系 | — | 独立插件，**可同时安装、互不影响** |
 
-# 安装
+因为 GUID 不同，本插件不会覆盖官方版；两者可以共存。也正因为如此，官方版里已保存的设置（如 bgm.tv 授权）**不会自动带入**，首次安装需重新配置一次。
 
-## 通过插件库安装
+媒体库中已刮削的 Bangumi ID **不受影响**：两个版本使用相同的 provider 标识，切换或共存都无需重新刮削。
 
-1. 控制台中选择 插件 - 存储库 - 添加
-2. 在插件目录中找到 Bangumi 插件安装
+## 功能
 
-目前有三个插件库地址可供选择，可以视网络情况自行选择：
- - GitHub Pages\
-   https://kookxiang.github.io/jellyfin-plugin-bangumi/repository.json
- - CloudFlare Pages\
-   https://jellyfin-plugin-bangumi.kookxiang.dev/repository.json
- - CloudFlare Pages（不推荐）\
-   https://jellyfin-plugin-bangumi.pages.dev/repository.json
+继承自上游 `1.7.2`：
 
-安装后可在后台更新，推荐使用此方式安装
+- 番剧、电影、书籍、人物的中文元数据与图片刮削
+- 播放进度回传至 bgm.tv
+- 离线数据库（离线档案）支持，缓解国内访问不稳定
+- 多种文件名、集数、季度的解析规则与特别篇识别
+- 丰富的刮削行为配置（标题偏好、季号猜测、搜索范围等）
 
-## 手动安装
+在此基础上按开发计划逐步同步上游后续功能与修复（如自定义 bgm.tv 站点地址、代理支持、Anitomy 剧集解析器、各类解析与容错修复等）。已同步的内容见各版本 Release 说明。
 
-1. 下载插件 DLL 文件至 `Jellyfin 数据目录/Plugins/Bangumi`
-2. 重新启动 Jellyfin
+## 下载
 
-# Emby 安装
+- 稳定版：<https://github.com/TGRonin/jellyfin-plugin-bangumi/releases/latest>
+- 开发快照：<https://github.com/TGRonin/jellyfin-plugin-bangumi/releases/tag/ci>
 
-Emby 版本的插件要求 4.9.0.12 及以上的版本，低于这个版本的会无法启动插件。
+## 安装
 
-可以从 [linuxserver/emby](https://hub.docker.com/r/linuxserver/emby/tags) 和 [emby/embyserver](https://hub.docker.com/r/emby/embyserver/tags) 上找到比 4.9.0.12 更高的版本。
+### 通过插件库（推荐）
 
-1. 下载插件 DLL 文件至 `Emby 数据目录/plugins/`
-2. 重新启动 Emby
+1. Jellyfin 控制台 → **插件** → **存储库** → 右上 `+`
+2. 名称随意，URL 填：
+   ```
+   https://tgronin.github.io/jellyfin-plugin-bangumi/repository.json
+   ```
+3. 保存后在 **目录** 中找到 *Bangumi for 10.10* 安装
+
+此方式安装后可在后台直接检查并更新到新版本。
+
+### 手动安装
+
+1. 从 Release 下载 `Jellyfin.Plugin.Bangumi.zip` 并解压
+2. 将解压出的全部文件放入 `Jellyfin 数据目录/Plugins/BangumiFor1010/`（目录名可自定）
+3. 重新启动 Jellyfin
+
+## 构建与发布
+
+- push 到 `master` 即触发 GitHub Actions 构建，产出 dll 与开发快照
+- 打 `v` 前缀 tag 并创建 Release 即发布新版本，插件库 manifest 自动更新
+- 版本号由 tag 加提交距离自动推导，无需手工维护
+
+## Emby
+
+构建同时产出 Emby 版本（*Bangumi Lite for 10.10*），要求 Emby `4.9.0.12` 及以上。
+Emby 版非本分支重点，功能与修复以 Jellyfin 版为准。
+
+## 致谢与许可
+
+- 基于 [kookxiang/jellyfin-plugin-bangumi](https://github.com/kookxiang/jellyfin-plugin-bangumi) fork，感谢上游作者与所有贡献者
+- 遵循 **GPL-2.0**，见 [LICENSE](LICENSE)
